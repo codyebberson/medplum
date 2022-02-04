@@ -3,6 +3,7 @@ import { Binary } from '@medplum/fhirtypes';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { randomUUID } from 'crypto';
 import React from 'react';
+import { vi } from 'vitest';
 import { AttachmentArrayInput, AttachmentArrayInputProps } from './AttachmentArrayInput';
 import { MedplumProvider } from './MedplumProvider';
 
@@ -48,7 +49,7 @@ function setup(args?: AttachmentArrayInputProps): void {
 
 describe('AttachmentArrayInput', () => {
   beforeAll(async () => {
-    global.URL.createObjectURL = jest.fn(() => 'details');
+    global.URL.createObjectURL = vi.fn(() => 'details');
   });
 
   test('Renders', () => {
@@ -117,7 +118,7 @@ describe('AttachmentArrayInput', () => {
   });
 
   test('Calls onChange', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'test',

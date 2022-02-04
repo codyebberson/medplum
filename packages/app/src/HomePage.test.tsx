@@ -3,6 +3,7 @@ import { MedplumProvider } from '@medplum/ui';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { vi } from 'vitest';
 import { getDefaultFields, HomePage } from './HomePage';
 
 function setup(url = '/Patient'): void {
@@ -96,7 +97,7 @@ describe('HomePage', () => {
   });
 
   test('Delete button, cancel', async () => {
-    window.confirm = jest.fn(() => false);
+    window.confirm = vi.fn(() => false);
 
     setup();
 
@@ -110,7 +111,7 @@ describe('HomePage', () => {
   });
 
   test('Delete button, ok', async () => {
-    window.confirm = jest.fn(() => true);
+    window.confirm = vi.fn(() => true);
 
     setup();
 
@@ -130,9 +131,9 @@ describe('HomePage', () => {
   });
 
   test('Export button', async () => {
-    // window.confirm = jest.fn(() => false);
-    window.URL.createObjectURL = jest.fn(() => 'blob:http://localhost/blob');
-    window.open = jest.fn();
+    // window.confirm = vi.fn(() => false);
+    window.URL.createObjectURL = vi.fn(() => 'blob:http://localhost/blob');
+    window.open = vi.fn();
 
     setup();
 
@@ -178,7 +179,7 @@ describe('HomePage', () => {
   });
 
   test('Left click on row', async () => {
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     setup('/Patient');
 
@@ -198,7 +199,7 @@ describe('HomePage', () => {
   });
 
   test('Middle click on row', async () => {
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     setup('/Patient');
 

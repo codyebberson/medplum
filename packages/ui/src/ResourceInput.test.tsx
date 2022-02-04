@@ -1,6 +1,7 @@
 import { MockClient } from '@medplum/mock';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
+import { vi } from 'vitest';
 import { MedplumProvider } from './MedplumProvider';
 import { ResourceInput, ResourceInputProps } from './ResourceInput';
 
@@ -16,14 +17,14 @@ function setup(args: ResourceInputProps): void {
 
 describe('ResourceInput', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(async () => {
     act(() => {
-      jest.runOnlyPendingTimers();
+      vi.runOnlyPendingTimers();
     });
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test('Renders empty', () => {
@@ -62,7 +63,7 @@ describe('ResourceInput', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -75,7 +76,7 @@ describe('ResourceInput', () => {
   });
 
   test('Call onChange', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       resourceType: 'Patient',
@@ -92,7 +93,7 @@ describe('ResourceInput', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 

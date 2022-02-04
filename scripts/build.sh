@@ -24,17 +24,12 @@ for PACKAGE in ${BUILD_ORDER[@]}; do
 done
 
 # Test
-TEST_ORDER=("fhirpath" "core" "mock" "ui" "app")
+TEST_ORDER=("fhirpath" "core" "mock" "ui" "app" "server")
 for PACKAGE in ${TEST_ORDER[@]}; do
   pushd "packages/$PACKAGE"
   npm t
   popd
 done
-
-# Server has special test configuration
-pushd "packages/server"
-node --expose-gc --trace-uncaught --max_old_space_size=4096 ../../node_modules/jest/bin/jest.js --runInBand --logHeapUsage
-popd
 
 # Combine test coverage
 rm -rf coverage

@@ -1,9 +1,10 @@
 import { MedplumClient } from '@medplum/core';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import crypto from 'crypto';
+import { webcrypto } from 'crypto';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { TextEncoder } from 'util';
+import { vi } from 'vitest';
 import { MedplumProvider } from './MedplumProvider';
 import { SignInForm, SignInFormProps } from './SignInForm';
 
@@ -121,7 +122,7 @@ function setup(args?: SignInFormProps): void {
   medplum.signOut();
 
   const props = {
-    onSuccess: jest.fn(),
+    onSuccess: vi.fn(),
     ...args,
   };
   render(
@@ -141,14 +142,14 @@ describe('SignInForm', () => {
       value: TextEncoder,
     });
 
-    Object.defineProperty(global.self, 'crypto', {
-      value: crypto.webcrypto,
+    Object.defineProperty(global, 'crypto', {
+      value: webcrypto,
     });
   });
 
   test('Renders', () => {
     setup();
-    const input = screen.getByTestId('submit') as HTMLButtonElement;
+    const input = screen.getByText('Sign in') as HTMLButtonElement;
     expect(input.innerHTML).toBe('Sign in');
   });
 
@@ -172,7 +173,7 @@ describe('SignInForm', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId('submit'));
+      fireEvent.click(screen.getByText('Sign in'));
     });
 
     await waitFor(() => expect(medplum.getProfile()).toBeDefined());
@@ -197,7 +198,7 @@ describe('SignInForm', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId('submit'));
+      fireEvent.click(screen.getByText('Sign in'));
     });
 
     await waitFor(() => expect(medplum.getProfile()).toBeDefined());
@@ -225,7 +226,7 @@ describe('SignInForm', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId('submit'));
+      fireEvent.click(screen.getByText('Sign in'));
     });
 
     await waitFor(() => expect(screen.getByText('Choose profile')).toBeDefined());
@@ -257,7 +258,7 @@ describe('SignInForm', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId('submit'));
+      fireEvent.click(screen.getByText('Sign in'));
     });
 
     await act(async () => {
@@ -284,7 +285,7 @@ describe('SignInForm', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId('submit'));
+      fireEvent.click(screen.getByText('Sign in'));
     });
 
     await act(async () => {
@@ -297,8 +298,8 @@ describe('SignInForm', () => {
 
   test('Forgot password', async () => {
     const props = {
-      onForgotPassword: jest.fn(),
-      onSuccess: jest.fn(),
+      onForgotPassword: vi.fn(),
+      onSuccess: vi.fn(),
     };
 
     setup(props);
@@ -312,8 +313,8 @@ describe('SignInForm', () => {
 
   test('Register', async () => {
     const props = {
-      onRegister: jest.fn(),
-      onSuccess: jest.fn(),
+      onRegister: vi.fn(),
+      onSuccess: vi.fn(),
     };
 
     setup(props);
@@ -329,14 +330,14 @@ describe('SignInForm', () => {
     (window as any).google = {
       accounts: {
         id: {
-          initialize: jest.fn(),
-          prompt: jest.fn(),
+          initialize: vi.fn(),
+          prompt: vi.fn(),
         },
       },
     };
 
     setup({
-      onSuccess: jest.fn(),
+      onSuccess: vi.fn(),
       googleClientId: '123',
     });
 

@@ -17,6 +17,7 @@ import {
 import { MockClient } from '@medplum/mock';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
+import { vi } from 'vitest';
 import { MedplumProvider } from './MedplumProvider';
 import { ResourcePropertyInput, ResourcePropertyInputProps } from './ResourcePropertyInput';
 
@@ -44,7 +45,7 @@ describe('ResourcePropertyInput', () => {
       ],
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'active',
@@ -70,7 +71,7 @@ describe('ResourcePropertyInput', () => {
       ],
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'date',
@@ -96,7 +97,7 @@ describe('ResourcePropertyInput', () => {
       ],
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'dateTime',
@@ -122,7 +123,7 @@ describe('ResourcePropertyInput', () => {
       ],
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'markdown',
@@ -207,7 +208,7 @@ describe('ResourcePropertyInput', () => {
       title: 'hello.txt',
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'content',
@@ -252,7 +253,7 @@ describe('ResourcePropertyInput', () => {
       },
     ];
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'photo',
@@ -349,7 +350,7 @@ describe('ResourcePropertyInput', () => {
       },
     ];
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'extension',
@@ -412,7 +413,7 @@ describe('ResourcePropertyInput', () => {
       },
     ];
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'identifier',
@@ -447,7 +448,7 @@ describe('ResourcePropertyInput', () => {
       end: '2021-01-02T12:00:00Z',
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'period',
@@ -483,7 +484,7 @@ describe('ResourcePropertyInput', () => {
       unit: 'mg',
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'test',
@@ -519,7 +520,7 @@ describe('ResourcePropertyInput', () => {
       high: { value: 10, unit: 'mg' },
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'test',
@@ -558,7 +559,7 @@ describe('ResourcePropertyInput', () => {
       denominator: { value: 10, unit: 'ml' },
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'test',
@@ -606,7 +607,7 @@ describe('ResourcePropertyInput', () => {
       type: [{ code: 'Quantity' }, { code: 'string' }, { code: 'integer' }],
     };
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     setup({
       name: 'value[x]',

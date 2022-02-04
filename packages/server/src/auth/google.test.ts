@@ -5,6 +5,7 @@ import express from 'express';
 import { pwnedPassword } from 'hibp';
 import fetch from 'node-fetch';
 import request from 'supertest';
+import { SpyInstance, vi } from 'vitest';
 import { initApp } from '../app';
 import { getConfig, loadTestConfig } from '../config';
 import { closeDatabase, initDatabase } from '../database';
@@ -13,15 +14,15 @@ import { setupPwnedPasswordMock, setupRecaptchaMock } from '../jest.setup';
 import { initKeys } from '../oauth';
 import { seedDatabase } from '../seed';
 
-jest.mock('@aws-sdk/client-sesv2');
-jest.mock('hibp');
-jest.mock('node-fetch');
+vi.mock('@aws-sdk/client-sesv2');
+vi.mock('hibp');
+vi.mock('node-fetch');
 
-jest.mock('jose', () => {
-  const original = jest.requireActual('jose');
+vi.mock('jose', () => {
+  // const original = vi.requireActual('jose');
   return {
-    ...original,
-    jwtVerify: jest.fn((credential: string) => ({
+    // ...original,
+    jwtVerify: vi.fn((credential: string) => ({
       payload: {
         // By convention for tests, return the credential as the email
         // Obviously in the real world the credential would be a JWT
@@ -48,12 +49,12 @@ describe('Google Auth', () => {
   });
 
   beforeEach(() => {
-    (SESv2Client as unknown as jest.Mock).mockClear();
-    (SendEmailCommand as unknown as jest.Mock).mockClear();
-    (fetch as unknown as jest.Mock).mockClear();
-    (pwnedPassword as unknown as jest.Mock).mockClear();
-    setupPwnedPasswordMock(pwnedPassword as unknown as jest.Mock, 0);
-    setupRecaptchaMock(fetch as unknown as jest.Mock, true);
+    (SESv2Client as unknown as SpyInstance).mockClear();
+    (SendEmailCommand as unknown as SpyInstance).mockClear();
+    (fetch as unknown as SpyInstance).mockClear();
+    (pwnedPassword as unknown as SpyInstance).mockClear();
+    setupPwnedPasswordMock(pwnedPassword as unknown as SpyInstance, 0);
+    setupRecaptchaMock(fetch as unknown as SpyInstance, true);
   });
 
   test('Missing client ID', async () => {

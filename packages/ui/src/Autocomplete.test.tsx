@@ -1,17 +1,18 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
+import { vi } from 'vitest';
 import { Autocomplete } from './Autocomplete';
 
 describe('Autocomplete', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(async () => {
     act(() => {
-      jest.runOnlyPendingTimers();
+      vi.runOnlyPendingTimers();
     });
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test('Renders', () => {
@@ -40,7 +41,7 @@ describe('Autocomplete', () => {
 
     // Wait for default value to load
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('selected'));
     });
 
@@ -61,7 +62,7 @@ describe('Autocomplete', () => {
 
     // Wait for default value to load
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('autocomplete'));
     });
   });
@@ -84,7 +85,7 @@ describe('Autocomplete', () => {
 
     // Wait for default value to load
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('selected'));
     });
 
@@ -140,7 +141,7 @@ describe('Autocomplete', () => {
 
     await act(async () => {
       fireEvent.change(input, { target: { value: 'Simpson' } });
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -169,7 +170,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -206,7 +207,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -238,7 +239,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -270,7 +271,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -302,7 +303,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -316,7 +317,7 @@ describe('Autocomplete', () => {
   });
 
   test('Select option with click', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     render(
       <Autocomplete
@@ -337,7 +338,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -350,7 +351,7 @@ describe('Autocomplete', () => {
   });
 
   test('Select Create New', async () => {
-    const createNew = jest.fn();
+    const createNew = vi.fn();
 
     render(
       <Autocomplete
@@ -371,7 +372,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -384,7 +385,7 @@ describe('Autocomplete', () => {
   });
 
   test('Ignore empty', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     render(
       <Autocomplete
@@ -408,7 +409,7 @@ describe('Autocomplete', () => {
   });
 
   test('Build unstructured', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     render(
       <Autocomplete
@@ -432,7 +433,7 @@ describe('Autocomplete', () => {
     // Wait for the timers
     // Dropdown will never come, because there are zero matches
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     // Press "Tab"
@@ -445,7 +446,7 @@ describe('Autocomplete', () => {
   });
 
   test('Hover over row', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     render(
       <Autocomplete
@@ -466,7 +467,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -507,7 +508,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -518,7 +519,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down to go away
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(screen.queryByTestId('dropdown')).toBeNull();
@@ -543,7 +544,7 @@ describe('Autocomplete', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 

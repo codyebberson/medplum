@@ -1,6 +1,10 @@
 import { Patient, Reference, Resource } from '@medplum/fhirtypes';
 
 declare const google: unknown;
+declare const grecaptcha: {
+  ready: (callback: () => void) => void;
+  execute: (key: string, event: any) => Promise<string>;
+};
 
 export function getPatient(resource: Resource): Patient | Reference<Patient> | undefined {
   if (resource.resourceType === 'Patient') {
@@ -33,7 +37,7 @@ export function initGoogleAuth(): void {
  */
 export function initRecaptcha(): void {
   if (typeof grecaptcha === 'undefined') {
-    createScriptTag('https://www.google.com/recaptcha/api.js?render=' + process.env.RECAPTCHA_SITE_KEY);
+    createScriptTag('https://www.google.com/recaptcha/api.js?render=' + import.meta.env.VITE_RECAPTCHA_SITE_KEY);
   }
 }
 
@@ -56,7 +60,7 @@ function createScriptTag(src: string): void {
 export function getRecaptcha(): Promise<string> {
   return new Promise((resolve) => {
     grecaptcha.ready(() => {
-      grecaptcha.execute(process.env.RECAPTCHA_SITE_KEY as string, { action: 'submit' }).then(resolve);
+      grecaptcha.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY as string, { action: 'submit' }).then(resolve);
     });
   });
 }

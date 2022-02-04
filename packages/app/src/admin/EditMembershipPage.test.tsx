@@ -3,6 +3,7 @@ import { MedplumProvider } from '@medplum/ui';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { vi } from 'vitest';
 import { EditMembershipPage } from './EditMembershipPage';
 
 let medplum = new MockClient();
@@ -22,15 +23,14 @@ function setup(url: string): void {
 describe('EditMembershipPage', () => {
   beforeEach(() => {
     medplum = new MockClient();
-
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(async () => {
     act(() => {
-      jest.runOnlyPendingTimers();
+      vi.runOnlyPendingTimers();
     });
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test('Renders', async () => {
@@ -77,7 +77,7 @@ describe('EditMembershipPage', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       await waitFor(() => screen.getByTestId('dropdown'));
     });
 
@@ -94,7 +94,7 @@ describe('EditMembershipPage', () => {
   });
 
   test('Submit with admin', async () => {
-    const medplumPostSpy = jest.spyOn(medplum, 'post');
+    const medplumPostSpy = vi.spyOn(medplum, 'post');
 
     setup('/admin/projects/123/members/456');
 
@@ -113,7 +113,7 @@ describe('EditMembershipPage', () => {
 
     // Wait for the drop down
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     await act(async () => {
@@ -140,7 +140,7 @@ describe('EditMembershipPage', () => {
     expect(screen.getByText('Remove user')).toBeInTheDocument();
 
     await act(async () => {
-      window.confirm = jest.fn(() => true);
+      window.confirm = vi.fn(() => true);
       fireEvent.click(screen.getByText('Remove user'));
     });
 
@@ -157,7 +157,7 @@ describe('EditMembershipPage', () => {
     expect(screen.getByText('Remove user')).toBeInTheDocument();
 
     await act(async () => {
-      window.confirm = jest.fn(() => false);
+      window.confirm = vi.fn(() => false);
       fireEvent.click(screen.getByText('Remove user'));
     });
 

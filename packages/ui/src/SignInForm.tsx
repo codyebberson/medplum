@@ -6,10 +6,10 @@ import { Button } from './Button';
 import { Document } from './Document';
 import { Form } from './Form';
 import { FormSection } from './FormSection';
+import { Input } from './Input';
 import { Logo } from './Logo';
 import { MedplumLink } from './MedplumLink';
 import { useMedplum } from './MedplumProvider';
-import { Input } from './Input';
 import { getIssuesForExpression } from './utils/outcomes';
 import './SignInForm.css';
 import './util.css';
@@ -133,9 +133,7 @@ function AuthenticationForm(props: AuthenticationFormProps): JSX.Element {
           <label htmlFor="remember">Remember me</label>
         </div>
         <div>
-          <Button type="submit" testid="submit">
-            Sign in
-          </Button>
+          <Button type="submit">Sign in</Button>
         </div>
       </div>
       {props.googleClientId && (
