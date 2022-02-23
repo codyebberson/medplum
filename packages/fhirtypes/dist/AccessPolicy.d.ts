@@ -72,9 +72,15 @@ export interface AccessPolicyResource {
   readonly resourceType?: string;
 
   /**
-   * Optional compartment restriction for the resource type.
+   * DEPRECATED Optional compartment restriction for the resource type.
    */
   readonly compartment?: Reference;
+
+  /**
+   * The rules that the server should use to determine which resources to
+   * allow.
+   */
+  readonly criteria?: string;
 
   /**
    * Optional flag to indicate that the resource type is read-only.

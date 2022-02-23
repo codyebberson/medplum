@@ -26,13 +26,6 @@ export interface Column {
   readonly raw?: boolean;
 }
 
-export interface Condition {
-  readonly column: Column;
-  readonly operator: Operator;
-  readonly parameter: any;
-  readonly parameterType?: string;
-}
-
 export interface Join {
   readonly left: Column;
   readonly right: Column;
@@ -42,6 +35,106 @@ export interface Join {
 export interface OrderBy {
   readonly column: Column;
   readonly descending?: boolean;
+}
+
+export interface Expression {
+  buildSql(sql: SqlBuilder): void;
+}
+
+export class Condition implements Expression {
+  constructor(
+    readonly column: Column,
+    readonly operator: Operator,
+    readonly parameter: any,
+    readonly parameterType?: string
+  ) {}
+
+  buildSql(sql: SqlBuilder): void {
+    if (this.operator === Operator.ARRAY_CONTAINS) {
+      if (Array.isArray(this.parameter)) {
+        this.buildArrayContainsArray(sql);
+      } else {
+        this.buildArrayContainsValue(sql);
+      }
+    } else {
+      this.buildSimpleCondition(sql);
+    }
+  }
+
+  private buildArrayContainsArray(sql: SqlBuilder): void {
+    sql.appendColumn(this.column);
+    sql.append('&&ARRAY[');
+
+    let first = true;
+    for (const value of this.parameter) {
+      if (!first) {
+        sql.append(',');
+      }
+      sql.param(value);
+      first = false;
+    }
+
+    sql.append(']');
+    if (this.parameterType) {
+      sql.append('::' + this.parameterType);
+    }
+  }
+
+  private buildArrayContainsValue(sql: SqlBuilder): void {
+    sql.param(this.parameter);
+    sql.append('=ANY(');
+    sql.appendColumn(this.column);
+    sql.append(')');
+  }
+
+  private buildSimpleCondition(sql: SqlBuilder): void {
+    if (this.operator === Operator.LIKE || this.operator === Operator.NOT_LIKE) {
+      sql.append('LOWER(');
+      sql.appendColumn(this.column);
+      sql.append(')');
+      sql.append(this.operator);
+      sql.param((this.parameter as string).toLowerCase());
+    } else {
+      sql.appendColumn(this.column);
+      sql.append(this.operator);
+      sql.param(this.parameter);
+    }
+  }
+}
+
+export class Conjunction implements Expression {
+  constructor(readonly expressions: Expression[]) {}
+
+  where(column: Column | string, operator: Operator, value: any, type?: string): this {
+    this.expressions.push(new Condition(getColumn(column), operator, value, type));
+    return this;
+  }
+
+  buildSql(sql: SqlBuilder): void {
+    let first = true;
+    for (const expr of this.expressions) {
+      if (!first) {
+        sql.append(' AND ');
+      }
+      expr.buildSql(sql);
+      first = false;
+    }
+  }
+}
+
+export class Disjunction implements Expression {
+  constructor(readonly expressions: Expression[]) {}
+
+  buildSql(sql: SqlBuilder): void {
+    let first = true;
+    for (const expr of this.expressions) {
+      if (!first) {
+        sql.append(' OR ');
+      }
+      expr.buildSql(sql);
+      first = false;
+    }
+  }
 }
 
 export class SqlBuilder {
@@ -95,81 +188,22 @@ export class SqlBuilder {
 
 export abstract class BaseQuery {
   readonly tableName: string;
-  readonly conditions: Condition[];
+  readonly predicate: Conjunction;
 
   constructor(tableName: string) {
     this.tableName = tableName;
-    this.conditions = [];
+    this.predicate = new Conjunction([]);
   }
 
   where(column: Column | string, operator: Operator, value: any, type?: string): this {
-    this.conditions.push({
-      column: getColumn(column),
-      operator,
-      parameter: value,
-      parameterType: type,
-    });
+    this.predicate.where(column, operator, value, type);
     return this;
   }
 
-  protected buildConditions(sql: SqlBuilder): void {
-    let first = true;
-    for (const condition of this.conditions) {
-      sql.append(first ? ' WHERE ' : ' AND ');
-      this.buildCondition(sql, condition);
-      first = false;
-    }
-  }
-
-  protected buildCondition(sql: SqlBuilder, condition: Condition): void {
-    if (condition.operator === Operator.ARRAY_CONTAINS) {
-      if (Array.isArray(condition.parameter)) {
-        this.buildArrayContainsArray(sql, condition);
-      } else {
-        this.buildArrayContainsValue(sql, condition);
-      }
-    } else {
-      this.buildSimpleCondition(sql, condition);
-    }
-  }
-
-  protected buildArrayContainsArray(sql: SqlBuilder, condition: Condition): void {
-    sql.appendColumn(condition.column);
-    sql.append('&&ARRAY[');
-
-    let first = true;
-    for (const value of condition.parameter) {
-      if (!first) {
-        sql.append(',');
-      }
-      sql.param(value);
-      first = false;
-    }
-
-    sql.append(']');
-    if (condition.parameterType) {
-      sql.append('::' + condition.parameterType);
-    }
-  }
-
-  protected buildArrayContainsValue(sql: SqlBuilder, condition: Condition): void {
-    sql.param(condition.parameter);
-    sql.append('=ANY(');
-    sql.appendColumn(condition.column);
-    sql.append(')');
-  }
-
-  protected buildSimpleCondition(sql: SqlBuilder, condition: Condition): void {
-    if (condition.operator === Operator.LIKE || condition.operator === Operator.NOT_LIKE) {
-      sql.append('LOWER(');
-      sql.appendColumn(condition.column);
-      sql.append(')');
-      sql.append(condition.operator);
-      sql.param((condition.parameter as string).toLowerCase());
-    } else {
-      sql.appendColumn(condition.column);
-      sql.append(condition.operator);
-      sql.param(condition.parameter);
+  protected buildPredicate(sql: SqlBuilder): void {
+    if (this.predicate.expressions.length > 0) {
+      sql.append(' WHERE ');
+      this.predicate.buildSql(sql);
     }
   }
 }
@@ -227,7 +261,7 @@ export class SelectQuery extends BaseQuery {
   buildSql(sql: SqlBuilder): void {
     this.#buildSelect(sql);
     this.#buildFrom(sql);
-    this.buildConditions(sql);
+    this.buildPredicate(sql);
     this.#buildOrderBy(sql);
 
     if (this.limit_ > 0) {
@@ -360,7 +394,7 @@ export class DeleteQuery extends BaseQuery {
     const sql = new SqlBuilder();
     sql.append('DELETE FROM ');
     sql.appendIdentifier(this.tableName);
-    this.buildConditions(sql);
+    this.buildPredicate(sql);
     return sql.execute(conn);
   }
 }

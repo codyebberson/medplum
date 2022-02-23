@@ -1,7 +1,7 @@
 import { Filter, SortRule } from '@medplum/core';
 import { Resource, SearchParameter } from '@medplum/fhirtypes';
 import { getClient } from '../../database';
-import { DeleteQuery, Operator, SelectQuery } from '../sql';
+import { Conjunction, DeleteQuery, Operator, SelectQuery } from '../sql';
 
 /**
  * The LookupTable interface is used for search parameters that are indexed in separate tables.
@@ -39,11 +39,12 @@ export abstract class LookupTable<T> {
   /**
    * Adds "where" conditions to the select query builder.
    * @param selectQuery The select query builder.
+   * @param predicate The conjunction where conditions should be added.
    * @param filter The search filter details.
    */
-  addWhere(selectQuery: SelectQuery, filter: Filter): void {
+  addWhere(selectQuery: SelectQuery, predicate: Conjunction, filter: Filter): void {
     const tableName = this.getTableName();
-    const joinName = tableName + '_' + filter.code + '_search';
+    const joinName = 'T' + (selectQuery.joins.length + 1);
     const columnName = this.getColumnName(filter.code);
     const subQuery = new SelectQuery(tableName)
       .raw(`DISTINCT ON ("${tableName}"."resourceId") *`)
@@ -59,7 +60,7 @@ export abstract class LookupTable<T> {
    */
   addOrderBy(selectQuery: SelectQuery, sortRule: SortRule): void {
     const tableName = this.getTableName();
-    const joinName = tableName + '_' + sortRule.code + '_sort';
+    const joinName = 'T' + (selectQuery.joins.length + 1);
     const columnName = this.getColumnName(sortRule.code);
     const subQuery = new SelectQuery(tableName)
       .raw(`DISTINCT ON ("${tableName}"."resourceId") *`)
