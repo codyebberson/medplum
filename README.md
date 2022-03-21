@@ -87,10 +87,28 @@ Start the dev docker image:
 docker-compose up -d
 ```
 
-Shell into the docker image:
+List all containers and port numbers:
+
+```bash
+docker ps
+```
+
+Inspect the network:
+
+```bash
+docker network inspect medplum_default
+```
+
+Shell into the docker container:
 
 ```bash
 docker exec -it medplum_dev /bin/bash
+```
+
+Connect to postgres from within the docker container:
+
+```bash
+psql --host=medplum_postgres --username=medplum --password
 ```
 
 ## License

@@ -93,7 +93,7 @@ export async function loadTestConfig(): Promise<MedplumServerConfig> {
     ...config,
     database: {
       ...config.database,
-      host: process.env['POSTGRES_HOST'] ?? 'localhost',
+      host: process.env['POSTGRES_HOST'] ?? 'medplum_postgres_test',
       port: process.env['POSTGRES_PORT'] ? parseInt(process.env['POSTGRES_PORT']) : 5432,
       dbname: 'medplum_test',
     },

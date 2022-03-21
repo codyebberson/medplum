@@ -20,7 +20,7 @@
   "maxJsonSize": "1mb",
   "maxUploadSize": "10mb",
   "database": {
-    "host": "localhost",
+    "host": "medplum_postgres",
     "port": 5432,
     "dbname": "medplum",
     "username": "medplum",
