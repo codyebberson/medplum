@@ -1,0 +1,6 @@
+[submodule "examples/medplum-hello-world"]
+	path = examples/medplum-hello-world
+	url = git@github.com:medplum/medplum-hello-world.git
+[submodule "examples/foomedical"]
+	path = examples/foomedical
+	url = git@github.com:medplum/foomedical.git
