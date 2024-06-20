@@ -21,5 +21,12 @@ npm --version
 # Build
 npm run build:all
 
+# Agent installer
+pushd packages/agent
+npm run package
+npm run installer
+ls -la dist
+popd
+
 # Lint
 npm run lint
